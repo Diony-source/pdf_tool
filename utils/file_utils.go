@@ -1,14 +1,28 @@
 package utils
 
 import (
-	"fmt"
 	"os"
+	"path/filepath"
 )
 
-// CheckFileExists checks if a file exists
-func CheckFileExists(filePath string) error {
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		return fmt.Errorf("file does not exist")
+// FindFileInSystem searches for a file in the system starting from the given root directory
+func FindFileInSystem(rootDir, targetFile string) (string, error) {
+	var result string
+	err := filepath.Walk(rootDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return nil
+		}
+		if info.Name() == targetFile {
+			result = path
+			return filepath.SkipDir // Stop further walking
+		}
+		return nil
+	})
+	if err != nil {
+		return "", err
 	}
-	return nil
+	if result == "" {
+		return "", os.ErrNotExist
+	}
+	return result, nil
 }
