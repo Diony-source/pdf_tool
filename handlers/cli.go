@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"log"
+	"strings"
 	"pdf_tool/services"
 )
 
@@ -11,8 +12,7 @@ func StartCLI() {
 	for {
 		fmt.Println("\nPDF Tool")
 		fmt.Println("1. Merge PDFs")
-		fmt.Println("2. Split PDF")
-		fmt.Println("3. Exit")
+		fmt.Println("2. Exit")
 		fmt.Print("Choose an option: ")
 
 		var choice int
@@ -21,17 +21,17 @@ func StartCLI() {
 		switch choice {
 		case 1:
 			// Merge PDFs
-			var inputFiles []string
+			var inputFiles string
 			var outputFile string
+
 			fmt.Print("Enter input PDF files (comma-separated): ")
-			var input string
-			fmt.Scanln(&input)
-			inputFiles = append(inputFiles, input)
+			fmt.Scanln(&inputFiles)
 
 			fmt.Print("Enter output file name: ")
 			fmt.Scanln(&outputFile)
 
-			err := services.MergePDFs(inputFiles, outputFile)
+			files := strings.Split(inputFiles, ",")
+			err := services.MergePDFs(files, outputFile)
 			if err != nil {
 				log.Printf("Error merging PDFs: %v\n", err)
 			} else {
@@ -39,23 +39,6 @@ func StartCLI() {
 			}
 
 		case 2:
-			// Split PDF
-			var inputFile string
-			var outputDir string
-			fmt.Print("Enter input PDF file: ")
-			fmt.Scanln(&inputFile)
-
-			fmt.Print("Enter output directory: ")
-			fmt.Scanln(&outputDir)
-
-			err := services.SplitPDF(inputFile, outputDir)
-			if err != nil {
-				log.Printf("Error splitting PDF: %v\n", err)
-			} else {
-				fmt.Println("PDF split successfully!")
-			}
-
-		case 3:
 			// Exit
 			fmt.Println("Goodbye!")
 			return
